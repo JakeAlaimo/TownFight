@@ -1590,6 +1590,7 @@ mission_templates = [
 	 (47,mtef_visitor_source|mtef_team_1,af_override_horse,aif_start_alarmed,1,[]),
      ],
     [
+	
       (ti_on_agent_spawn, 0, 0, [],
       [
         (store_trigger_param_1, ":agent_no"),
@@ -1614,7 +1615,20 @@ mission_templates = [
       [
         (assign, "$g_main_attacker_agent", 0),
 	  ]),
-		 
+	  
+	  #make npcs attack when player draws weapon in town
+	  (1,0, 0,
+	  [
+	   #(game_key_is_down, gk_attack)
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (eq, ":action" , 2),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  	  
       (1, 0, ti_once, 
       [],
       [

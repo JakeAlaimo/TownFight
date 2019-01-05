@@ -50778,5 +50778,53 @@ scripts = [
     (cur_tableau_add_sun_light, pos8, 175,150,125),
     ]),
    #INVASION MODE END
+   
+   #--------------------------------------------------------------------------------------------------------Begin Code added by me here----------------------------------------------------------------------------------------------------------------
+   
+   #cause agents who are at risk of being hit by the player to defend themselves
+   ("provoke_nearby_agents",
+   [   
+		(set_party_battle_mode),		#this is run in the trp_fugitive quests so may be necessary?
+		(get_player_agent_no, ":player_agent"),
+		(agent_get_position, pos1, ":player_agent"),
+		(assign, ":numProvoked", 0),
+		(try_for_agents, ":cur_agent"),
+			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
+			(agent_get_position, pos2, ":cur_agent"),
+			(get_distance_between_positions,":dist",pos2,pos1),
+			(lt, ":dist", 200),
+			
+			#set the agent to be aggressive
+			(agent_set_team, ":cur_agent", 1),	#set all other agents to team_1 so they are agressive
+			(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
+			(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
+			
+			
+		(try_end),
+				
+		#switch the music track if anyone has been provoked
+		(gt, ":numProvoked", 0),
+		(call_script, "script_music_set_situation_with_culture", mtf_sit_fight),		
+		
+   ]), 
+   
+   ("start_town_fight",
+   [   
+		(set_party_battle_mode),		#this is run in the trp_fugitive quests so may be necessary?
+		(get_player_agent_no, ":player_agent"),
+		(try_for_agents, ":cur_agent"),
+			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
+			(agent_set_team, ":cur_agent", 1),	#set all other agents to team_1 so they are agressive
+			(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
+			(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
+		(try_end),
+		
+		#play a specific music track for the start of the fight
+		#(play_track, "track_town_battle", 2),	# 0 = default, 1 = fade out current track, 2 = stop current track
+		
+		#switch the music situtation after the fight track finishes
+		(call_script, "script_music_set_situation_with_culture", mtf_sit_fight),		
+		
+   ]), 
      
 ]
