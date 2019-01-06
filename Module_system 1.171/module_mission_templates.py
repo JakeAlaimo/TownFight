@@ -1005,7 +1005,7 @@ common_siege_assign_men_to_belfry = (
     ], [])
 
 
-tournament_triggers = [
+tournament_triggers = [  
   (ti_before_mission_start, 0, 0, [], [(call_script, "script_change_banners_and_chest"),
                                        (assign, "$g_arena_training_num_agents_spawned", 0)]),
   (ti_inventory_key_pressed, 0, 0, [(display_message,"str_cant_use_inventory_arena")], []),
@@ -1310,6 +1310,25 @@ mission_templates = [
      (31,mtef_visitor_source,af_override_horse,0,1,[]),
      ],     
      [
+	 #edits below
+	  #make npcs attack when player draws weapon in town
+	  (0.25,0, 0,
+	  [
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  #edits above
+	 
       (1, 0, ti_once, [], 
       [
         (store_current_scene, ":cur_scene"),
@@ -1616,18 +1635,24 @@ mission_templates = [
         (assign, "$g_main_attacker_agent", 0),
 	  ]),
 	  
+	  #edits below
 	  #make npcs attack when player draws weapon in town
-	  (1,0, 0,
+	  (0.25,0, 0,
 	  [
-	   #(game_key_is_down, gk_attack)
 	   (get_player_agent_no, ":player"),
 	   (agent_get_attack_action, ":action", ":player"),
 	   (this_or_next|eq, ":action" , 1),
-	   (eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
 	  ],
 	  [
 	   (call_script, "script_provoke_nearby_agents"),
 	  ]),
+	  #edits above
 	  	  
       (1, 0, ti_once, 
       [],
@@ -1869,7 +1894,27 @@ mission_templates = [
           (call_script, "script_init_town_walker_agents"),
           (call_script, "script_music_set_situation_with_culture", mtf_sit_travel),
         ]),
-      (ti_before_mission_start, 0, 0, [], [(call_script, "script_change_banners_and_chest")]),
+      
+	  #edits below
+	  #make npcs attack when player draws weapon in town
+	  (0.25,0, 0,
+	  [
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  #edits above
+	  
+	  (ti_before_mission_start, 0, 0, [], [(call_script, "script_change_banners_and_chest")]),
       (ti_inventory_key_pressed, 0, 0, [(set_trigger_result,1)], []),
       (ti_tab_pressed, 0, 0, [(try_begin),
                                 (check_quest_active, "qst_hunt_down_fugitive"),
@@ -2067,6 +2112,25 @@ mission_templates = [
      (31,mtef_visitor_source,af_castle_lord,0,1,[])
      ],
     [
+	  #edits below
+	  #make npcs attack when player draws weapon in town
+	  (0.25,0, 0,
+	  [
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  #edits above
+	
       (ti_on_agent_spawn, 0, 0, [],
       [
         (store_trigger_param_1, ":agent_no"),
@@ -3197,7 +3261,27 @@ mission_templates = [
      (45,mtef_visitor_source|mtef_team_0,af_override_horse,0,1,[]),
      (46,mtef_visitor_source|mtef_team_0,af_override_horse,0,1,[]),
      ],
-    [    
+    [   
+
+	  #edits below
+	  #make npcs attack when player draws weapon in town
+	  (0.25,0, 0,
+	  [
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  #edits above
+	
       (ti_on_agent_spawn, 0, 0, [],
       [
         (store_trigger_param_1, ":agent_no"),
@@ -4000,7 +4084,7 @@ mission_templates = [
       (56, mtef_visitor_source|mtef_team_0, af_override_all, aif_start_alarmed, 1, [itm_practice_sword, itm_practice_shield, itm_padded_cloth, itm_segmented_helmet]),
       (57, mtef_visitor_source|mtef_team_0, af_override_all, aif_start_alarmed, 1, [itm_practice_sword, itm_practice_shield, itm_padded_cloth, itm_segmented_helmet]),
     ],
-    tournament_triggers
+    tournament_triggers	  
   ),
 
   (
@@ -4432,6 +4516,26 @@ mission_templates = [
         (31,mtef_visitor_source,af_castle_lord,0,1,[]),
      ],
     [
+	
+	  #edits below
+	  #make npcs attack when player draws weapon in town
+	  (0.25,0, 0,
+	  [
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  #edits above
+	
       (ti_tab_pressed, 0, 0, [],
        [
          (show_object_details_overlay, 1),
@@ -15291,6 +15395,26 @@ mission_templates = [
       (9,mtef_visitor_source|mtef_team_0,af_override_horse,0,1,[]),
     ],
     [
+	#edits below
+	  #make npcs attack when player draws weapon in town
+	  (0.25,0, 0,
+	  [
+	   (get_player_agent_no, ":player"),
+	   (agent_get_attack_action, ":action", ":player"),
+	   (this_or_next|eq, ":action" , 1),
+	   (this_or_next|eq, ":action" , 2),
+	   (this_or_next|eq, ":action" , 3),
+	   (this_or_next|eq, ":action" , 4),
+	   (this_or_next|eq, ":action" , 6),
+	   (this_or_next|game_key_is_down, gk_attack),
+	   (game_key_is_down, gk_kick),
+	  ],
+	  [
+	   (call_script, "script_provoke_nearby_agents"),
+	  ]),
+	  #edits above
+		
+	
       (ti_on_agent_spawn, 0, 0, [],
       [              
         (store_trigger_param_1, ":agent_no"),

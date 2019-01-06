@@ -50792,7 +50792,7 @@ scripts = [
 			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
 			(agent_get_position, pos2, ":cur_agent"),
 			(get_distance_between_positions,":dist",pos2,pos1),
-			(lt, ":dist", 200),
+			(lt, ":dist", 250),
 			
 			#set the agent to be aggressive
 			(agent_set_team, ":cur_agent", 1),	#set all other agents to team_1 so they are agressive
