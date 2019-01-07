@@ -50832,64 +50832,87 @@ scripts = [
 		(assign, ":numProvoked", 0),
 		(try_for_agents, ":cur_agent"),
 			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
+			(agent_is_alive,":cur_agent"), #ignore downed npcs
+			(agent_is_human,":cur_agent"), #ignore horses
 			
 			#provoke only if within range
 			(agent_get_position, pos2, ":cur_agent"),
 			(get_distance_between_positions,":dist",pos2,pos1),
-			(lt, ":dist", 250),
 			
-			#provoke only if in front of the player
-			#pos3 is the vector from player to enemy
-			(position_get_x, ":xPos", pos2),
-			(position_get_y, ":yPos", pos2),
-			(position_get_x, ":playerPosX", pos1),
-			(position_get_y, ":playerPosY", pos1),			
+			(try_begin), #if player is mounted, don't worry about the swinging angle
 			
-			(store_sub, ":xDiff", ":xPos", ":playerPosX"),
-			(store_sub, ":yDiff", ":yPos", ":playerPosY"),
+				(agent_get_horse, ":horse",":player_agent"),
+				(neq, ":horse", -1), #player_agent is on a horse
+				(lt, ":dist", 350),
 			
-			#normalize the vector
-			(assign, ":magX", ":xDiff"),
-			(val_mul, ":magX", ":magX"),
-			(assign, ":magY", ":yDiff"),
-			(val_mul, ":magY", ":magY"),
-			(store_add, ":mag" ,":magY", ":magX" ),			
-			(store_sqrt, ":mag", ":mag"), # keep in mind that sqrt seems to be returning with one level of precision higher than position_get_n
+				#set the agent to be aggressive
+				(agent_set_team, ":cur_agent", 3),	#set agent to team_3 so they are agressive
+				(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
+				(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
 			
-			(val_mul, ":xDiff", 1000 ), #in order to maintain precision, we need to inflate the magnitude of the components
-			(val_mul, ":yDiff", 1000 ),
-			(store_div, ":vecX", ":xDiff", ":mag"),
-			(store_div, ":vecY", ":yDiff", ":mag"),			
+				(val_add, ":numProvoked", 1),
 			
-			#constuct the player's forward vector (acutal position doesn't matter, we can assume the player is the origin)
-			(position_get_rotation_around_z, ":playerDir", pos1),
-			(convert_to_fixed_point, ":playerDir"), 
-			(store_cos, ":forwardX", ":playerDir"),
-			(store_sin, ":forwardY", ":playerDir"),
+			(else_try), #player is not mounted. verify that the agent is at risk of being hit, given the angle between them and the player
 			
-			#now take the dot product of the normalized and forward vectors
-			(store_mul, ":dotX", ":forwardX", ":vecX"),
-			(store_mul, ":dotY", ":forwardY", ":vecY"),
-			(store_add, ":dot", ":dotX", ":dotY"),
+				(lt, ":dist", 250),
+				
+				#provoke only if in front of the player
+				#pos3 is the vector from player to enemy
+				(position_get_x, ":xPos", pos2),
+				(position_get_y, ":yPos", pos2),
+				(position_get_x, ":playerPosX", pos1),
+				(position_get_y, ":playerPosY", pos1),			
+				
+				(store_sub, ":xDiff",  ":xPos", ":playerPosX"),
+				(store_sub, ":yDiff", ":yPos", ":playerPosY"),
+				
+				#normalize the vector
+				(assign, ":magX", ":xDiff"),
+				(val_mul, ":magX", ":magX"),
+				(assign, ":magY", ":yDiff"),
+				(val_mul, ":magY", ":magY"),
+				(store_add, ":mag" ,":magY", ":magX" ),			
+				(store_sqrt, ":mag", ":mag"), # keep in mind that sqrt seems to be returning with one level of precision higher than position_get_n
+				
+				(val_mul, ":xDiff", 1000 ), #in order to maintain precision, we need to inflate the magnitude of the components
+				(val_mul, ":yDiff", 1000 ),
+				(store_div, ":vecX", ":xDiff", ":mag"),
+				(store_div, ":vecY", ":yDiff", ":mag"),			
+				
+				#constuct the player's forward vector (acutal position doesn't matter, we can assume the player is the origin)
+				(position_get_rotation_around_z, ":playerDir", pos1), #offset by 90 deg, needs to be adjusted
+				(val_add, ":playerDir", 90),
+				(convert_to_fixed_point, ":playerDir"), 
+				(store_cos, ":forwardX", ":playerDir"),
+				(store_sin, ":forwardY", ":playerDir"),
+				
+				#now take the dot product of the normalized and forward vectors
+				(store_mul, ":dotX", ":forwardX", ":vecX"),
+				(store_mul, ":dotY", ":forwardY", ":vecY"),
+				(store_add, ":dot", ":dotX", ":dotY"),			
+				
+				#given a dot product, if the value is negative, the angle between the two vectors is obtuse
+				#in this context, a vector that is obtuse to the players forward vector lies behind them
+				#thus, we need to ensure that the value is acute or right angle, or >= 0
+				
+				#the angle itself can be further restricted because v * x = cos(angle between v and x)
+				#so if I wanted to restric aggro to within 40 deg, I just need to ensure that the dot product exceeds cos(40deg) * 10000 (to scale for precision)
+				#we want to check if it exceeds because a dot product of 1 (or 10000, in this case) indicates that the vectors are parallel in the same direction
+				#thus, the closer it is to 1 (again, 10000 in this case), the closer it is to being directly in front of the forward vector
+				
+				#note that all discussion of the dot product's properties assumes that the vectors have been normalized first
+				
+				(ge, ":dot", 7660), #roughly 40 deg window
+				
+				#set the agent to be aggressive
+				(agent_set_team, ":cur_agent", 3),	#set agent to team_3 so they are agressive
+				(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
+				(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
 			
-			#(assign, reg1, ":dotX"),
-			#(assign, reg2, ":dotY"),
-			#(assign, reg3, ":dot"),
-			#(dialog_box,"@Dot: {reg3}. dotX: {reg1}. dotY: {reg2}.", "@Alert"),
+				(val_add, ":numProvoked", 1),
 			
-			#given a dot product, if the value is negative, the angle between the two vectors is obtuse
-			#in this context, a vector that is obtuse to the players forward vector lies behind them
-			#thus, we need to ensure that the value is acute or right angle, or >= 0
-			
-			(ge, ":dot", 0),
-			
-			
-			#set the agent to be aggressive
-			(agent_set_team, ":cur_agent", 3),	#set agent to team_3 so they are agressive
-			(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
-			(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
-			
-			
+			(try_end),
+
 		(try_end),
 				
 		#switch the music track if anyone has been provoked
