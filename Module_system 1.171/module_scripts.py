@@ -50829,6 +50829,14 @@ scripts = [
 		(set_party_battle_mode),		#this is run in the trp_fugitive quests so may be necessary?
 		(get_player_agent_no, ":player_agent"),
 		(agent_get_position, pos1, ":player_agent"),
+		
+		#store player's weapon reach
+		(agent_get_wielded_item, ":wep", ":player_agent", 0),
+		(item_get_weapon_length, ":playerReach", ":wep"),
+		
+		(assign, reg1, ":playerReach"),
+		(display_message, "@Reach: {reg1}", "@OFF"),
+		
 		(assign, ":numProvoked", 0),
 		(try_for_agents, ":cur_agent"),
 			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
@@ -50843,7 +50851,9 @@ scripts = [
 			
 				(agent_get_horse, ":horse",":player_agent"),
 				(neq, ":horse", -1), #player_agent is on a horse
-				(lt, ":dist", 350),
+				
+				(store_add, ":provokeRangeHorse",":playerReach", 100 ),
+				(lt, ":dist", ":provokeRangeHorse"),
 			
 				#set the agent to be aggressive
 				(agent_set_team, ":cur_agent", 3),	#set agent to team_3 so they are agressive
@@ -50853,8 +50863,8 @@ scripts = [
 				(val_add, ":numProvoked", 1),
 			
 			(else_try), #player is not mounted. verify that the agent is at risk of being hit, given the angle between them and the player
-			
-				(lt, ":dist", 250),
+				(store_add, ":provokeRange",":playerReach", 50 ),
+				(lt, ":dist", ":provokeRange"),
 				
 				#provoke only if in front of the player
 				#pos3 is the vector from player to enemy
