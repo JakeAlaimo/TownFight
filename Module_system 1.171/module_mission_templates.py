@@ -1311,6 +1311,20 @@ mission_templates = [
      ],     
      [
 	 #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -1321,7 +1335,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [
@@ -1636,6 +1649,20 @@ mission_templates = [
 	  ]),
 	  
 	  #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -1646,7 +1673,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [
@@ -1896,6 +1922,20 @@ mission_templates = [
         ]),
       
 	  #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -1906,7 +1946,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [
@@ -2113,6 +2152,20 @@ mission_templates = [
      ],
     [
 	  #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -2123,7 +2176,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [
@@ -3264,6 +3316,20 @@ mission_templates = [
     [   
 
 	  #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -3274,7 +3340,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [
@@ -4518,6 +4583,35 @@ mission_templates = [
     [
 	
 	  #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
+	  #edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -4528,7 +4622,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [
@@ -15396,6 +15489,20 @@ mission_templates = [
     ],
     [
 	#edits below
+	  
+	  #prep everyone to receive ranged damage and respond to killing/wounding
+	  (ti_after_mission_start,0,ti_once, [],
+	  [
+		(call_script, "script_prepare_area_for_fighting"),
+	  ]),
+	  
+	  #make npcs attack when player shoots them with a ranged weapon
+	  (2,0, 0,
+	  [],
+	  [
+	    (call_script, "script_provoke_on_damage"),
+	  ]),
+	  
 	  #make npcs attack when player draws weapon in town
 	  (0.25,0, 0,
 	  [
@@ -15406,7 +15513,6 @@ mission_templates = [
 	   (this_or_next|eq, ":action" , 3),
 	   (this_or_next|eq, ":action" , 4),
 	   (this_or_next|eq, ":action" , 6),
-	   (this_or_next|game_key_is_down, gk_attack),
 	   (game_key_is_down, gk_kick),
 	  ],
 	  [

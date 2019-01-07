@@ -89,7 +89,11 @@ slot_agent_bought_horse           = 26
 slot_agent_doom_javelin_count     = 27
 slot_agent_doom_javelin_attacker  = 28
 #INVASION MODE END
-    
+
+#edits below
+slot_agent_hit_points			  = 29
+#edits above
+
 ########################################################
 ##  FACTION SLOTS          #############################
 ########################################################

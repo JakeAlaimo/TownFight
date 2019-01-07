@@ -50781,6 +50781,48 @@ scripts = [
    
    #--------------------------------------------------------------------------------------------------------Begin Code added by me here----------------------------------------------------------------------------------------------------------------
    
+   #prepare the agents to be hit by ranged and respond to wounding/killing
+   ("prepare_area_for_fighting",
+   [   
+		(set_party_battle_mode),		#this is run in the trp_fugitive quests so may be necessary?
+		(get_player_agent_no, ":player_agent"),
+		(try_for_agents, ":cur_agent"),
+			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
+			
+			#set the agent to be friendly
+			(agent_set_team, ":cur_agent", 2),	#set all other agents to team_2, a friendly team
+			
+			#store their hitpoints for later retrieval
+			(store_agent_hit_points,":agent_hp",":cur_agent",1),	#set to 1 to retrieve actual hp
+			(agent_set_slot, ":cur_agent", slot_agent_hit_points, ":agent_hp"),
+		(try_end),
+		(team_set_relation, 0, 2, 1), #ensure that team 2 is friendly with the 
+		(team_set_relation, 0, 3, -1), #ensure that team 3 is hostile to the player
+		(team_set_relation, 2, 3, 0), #ensure that team 3 is neutral to civilians
+   ]), 
+   
+   #damaged civilians will attempt to defend themselves (generally after range damage)
+   ("provoke_on_damage",
+   [
+		(get_player_agent_no, ":player_agent"),
+		(try_for_agents, ":cur_agent"),
+			(agent_get_team  ,":team", ":cur_agent"),
+			(eq, ":team", 2), #civilian
+			
+			(store_agent_hit_points,":agent_hp",":cur_agent",1), #get this agent's current health
+			(agent_get_slot, ":old_agent_hp", ":cur_agent", slot_agent_hit_points), #get agent's starting health
+			
+			(lt, ":agent_hp", ":old_agent_hp"),
+			
+			#set the agent to be aggressive
+			(agent_set_team, ":cur_agent", 3),	#set agent to team_3 so they are agressive
+			(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
+			(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
+			
+			
+		(try_end),
+   ]),
+   
    #cause agents who are at risk of being hit by the player to defend themselves
    ("provoke_nearby_agents",
    [   
@@ -50790,12 +50832,60 @@ scripts = [
 		(assign, ":numProvoked", 0),
 		(try_for_agents, ":cur_agent"),
 			(neq, ":cur_agent", ":player_agent"),	#don't change the players team (default of 0)
+			
+			#provoke only if within range
 			(agent_get_position, pos2, ":cur_agent"),
 			(get_distance_between_positions,":dist",pos2,pos1),
 			(lt, ":dist", 250),
 			
+			#provoke only if in front of the player
+			#pos3 is the vector from player to enemy
+			(position_get_x, ":xPos", pos2),
+			(position_get_y, ":yPos", pos2),
+			(position_get_x, ":playerPosX", pos1),
+			(position_get_y, ":playerPosY", pos1),			
+			
+			(store_sub, ":xDiff", ":xPos", ":playerPosX"),
+			(store_sub, ":yDiff", ":yPos", ":playerPosY"),
+			
+			#normalize the vector
+			(assign, ":magX", ":xDiff"),
+			(val_mul, ":magX", ":magX"),
+			(assign, ":magY", ":yDiff"),
+			(val_mul, ":magY", ":magY"),
+			(store_add, ":mag" ,":magY", ":magX" ),			
+			(store_sqrt, ":mag", ":mag"), # keep in mind that sqrt seems to be returning with one level of precision higher than position_get_n
+			
+			(val_mul, ":xDiff", 1000 ), #in order to maintain precision, we need to inflate the magnitude of the components
+			(val_mul, ":yDiff", 1000 ),
+			(store_div, ":vecX", ":xDiff", ":mag"),
+			(store_div, ":vecY", ":yDiff", ":mag"),			
+			
+			#constuct the player's forward vector (acutal position doesn't matter, we can assume the player is the origin)
+			(position_get_rotation_around_z, ":playerDir", pos1),
+			(convert_to_fixed_point, ":playerDir"), 
+			(store_cos, ":forwardX", ":playerDir"),
+			(store_sin, ":forwardY", ":playerDir"),
+			
+			#now take the dot product of the normalized and forward vectors
+			(store_mul, ":dotX", ":forwardX", ":vecX"),
+			(store_mul, ":dotY", ":forwardY", ":vecY"),
+			(store_add, ":dot", ":dotX", ":dotY"),
+			
+			#(assign, reg1, ":dotX"),
+			#(assign, reg2, ":dotY"),
+			#(assign, reg3, ":dot"),
+			#(dialog_box,"@Dot: {reg3}. dotX: {reg1}. dotY: {reg2}.", "@Alert"),
+			
+			#given a dot product, if the value is negative, the angle between the two vectors is obtuse
+			#in this context, a vector that is obtuse to the players forward vector lies behind them
+			#thus, we need to ensure that the value is acute or right angle, or >= 0
+			
+			(ge, ":dot", 0),
+			
+			
 			#set the agent to be aggressive
-			(agent_set_team, ":cur_agent", 1),	#set all other agents to team_1 so they are agressive
+			(agent_set_team, ":cur_agent", 3),	#set agent to team_3 so they are agressive
 			(agent_clear_scripted_mode, ":cur_agent"),	#so town walkers won't try and continue to walk around town
 			(agent_set_speed_limit, ":cur_agent", 50),	#so they will run faster
 			
