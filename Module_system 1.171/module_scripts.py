@@ -50831,11 +50831,13 @@ scripts = [
 		(agent_get_position, pos1, ":player_agent"),
 		
 		#store player's weapon reach
+		(assign, ":playerReach", 0),
 		(agent_get_wielded_item, ":wep", ":player_agent", 0),
-		(item_get_weapon_length, ":playerReach", ":wep"),
 		
-		(assign, reg1, ":playerReach"),
-		(display_message, "@Reach: {reg1}", "@OFF"),
+		(try_begin),
+			(neq, ":wep", -1),
+			(item_get_weapon_length, ":playerReach", ":wep"),
+		(try_end),
 		
 		(assign, ":numProvoked", 0),
 		(try_for_agents, ":cur_agent"),
@@ -50852,7 +50854,7 @@ scripts = [
 				(agent_get_horse, ":horse",":player_agent"),
 				(neq, ":horse", -1), #player_agent is on a horse
 				
-				(store_add, ":provokeRangeHorse",":playerReach", 100 ),
+				(store_add, ":provokeRangeHorse",":playerReach", 200 ),
 				(lt, ":dist", ":provokeRangeHorse"),
 			
 				#set the agent to be aggressive
@@ -50863,7 +50865,7 @@ scripts = [
 				(val_add, ":numProvoked", 1),
 			
 			(else_try), #player is not mounted. verify that the agent is at risk of being hit, given the angle between them and the player
-				(store_add, ":provokeRange",":playerReach", 50 ),
+				(store_add, ":provokeRange",":playerReach", 100 ),
 				(lt, ":dist", ":provokeRange"),
 				
 				#provoke only if in front of the player
